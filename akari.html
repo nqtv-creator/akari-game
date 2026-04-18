@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Akari — Lumière</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D0D0F;
+  --bg2: #141417;
+  --bg3: #1C1C21;
+  --surface: #212128;
+  --border: #2E2E38;
+  --border2: #3A3A48;
+  --text: #E8E6E0;
+  --text2: #9A9890;
+  --text3: #5A5860;
+  --gold: #F0C060;
+  --gold2: #C89030;
+  --amber: #E8942A;
+  --glow: #FFD060;
+  --lit: rgba(255,210,80,0.12);
+  --lit2: rgba(255,210,80,0.06);
+  --danger: #E05050;
+  --success: #50C080;
+  --blue: #6090E0;
+  --purple: #9060D0;
+  --teal: #40B090;
+  --coral: #E06050;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* ─── SCREENS ─── */
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ─── HOME ─── */
+#home {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  gap: 0;
+  position: relative;
+  overflow: hidden;
+}
+#home::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: 50%; transform: translateX(-50%);
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(240,192,96,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.home-lantern {
+  font-size: 64px;
+  margin-bottom: 1.5rem;
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.home-title {
+  font-family: 'Shippori Mincho', serif;
+  font-size: clamp(2.8rem, 8vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(240,192,96,0.4);
+  margin-bottom: 0.3rem;
+}
+.home-sub {
+  font-size: 0.75rem;
+  color: var(--text3);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
+}
+
+/* streak bar */
+.streak-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 18px;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 340px;
+}
+.streak-fire { font-size: 22px; }
+.streak-info { flex: 1; }
+.streak-count { font-size: 1.4rem; font-weight: 500; color: var(--gold); line-height: 1; }
+.streak-label { font-size: 0.68rem; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 1px; }
+.streak-shield { font-size: 18px; opacity: 0.4; }
+.streak-shield.active { opacity: 1; filter: drop-shadow(0 0 6px var(--gold)); }
+
+/* menu buttons */
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
+  margin-bottom: 1.5rem;
+}
+.menu-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.menu-btn:hover { border-color: var(--border2); background: var(--bg3); transform: translateY(-1px); }
+.menu-btn:active { transform: scale(0.97); }
+.menu-btn.featured {
+  grid-column: 1/-1;
+  flex-direction: row;
+  align-items: center;
+  border-color: var(--gold2);
+  background: linear-gradient(135deg, rgba(240,192,96,0.08), transparent);
+}
+.menu-btn .mb-icon { font-size: 24px; }
+.menu-btn .mb-title { font-size: 0.9rem; font-weight: 500; }
+.menu-btn .mb-sub { font-size: 0.7rem; color: var(--text3); }
+.menu-btn.featured .mb-info { flex: 1; }
+.badge-new { background: var(--amber); color: #fff; font-size: 0.6rem; font-weight: 500; padding: 2px 6px; border-radius: 6px; letter-spacing: 0.05em; vertical-align: middle; margin-left: 4px; }
+.badge-free { background: var(--teal); color: #fff; font-size: 0.6rem; font-weight: 500; padding: 2px 6px; border-radius: 6px; }
+.badge-premium { background: var(--gold2); color: #0D0D0F; font-size: 0.6rem; font-weight: 500; padding: 2px 6px; border-radius: 6px; }
+
+/* daily reward */
+.daily-reward {
+  width: 100%;
+  max-width: 340px;
+  background: linear-gradient(135deg, rgba(96,144,224,0.1), rgba(144,96,208,0.1));
+  border: 1px solid rgba(96,144,224,0.3);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.daily-reward:hover { transform: translateY(-1px); border-color: rgba(96,144,224,0.5); }
+.daily-reward .dr-icon { font-size: 28px; }
+.daily-reward .dr-title { font-size: 0.85rem; font-weight: 500; }
+.daily-reward .dr-sub { font-size: 0.7rem; color: var(--text3); margin-top: 2px; }
+.daily-reward .dr-btn { margin-left: auto; background: var(--blue); color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-size: 0.72rem; font-family: 'DM Sans', sans-serif; cursor: pointer; font-weight: 500; }
+
+/* premium banner */
+.premium-banner {
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text3);
+  margin-bottom: 0.5rem;
+}
+.premium-banner a { color: var(--gold); text-decoration: none; cursor: pointer; }
+
+/* ─── GAME SCREEN ─── */
+#game {
+  padding: 0;
+  background: var(--bg);
+}
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.back-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.back-btn:hover { border-color: var(--border2); color: var(--text); }
+.game-title-bar { flex: 1; }
+.game-mode-name { font-size: 0.95rem; font-weight: 500; }
+.game-level-name { font-size: 0.7rem; color: var(--text3); }
+.hint-counter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.hint-counter:hover { border-color: var(--gold2); }
+.hint-icon { font-size: 14px; }
+
+/* difficulty tabs */
+.diff-tabs {
+  display: flex;
+  gap: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.diff-tab {
+  flex: 1;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  padding: 7px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.05em;
+}
+.diff-tab:first-child { border-radius: 8px 0 0 8px; }
+.diff-tab:last-child { border-radius: 0 8px 8px 0; }
+.diff-tab.active { background: var(--gold2); border-color: var(--gold2); color: #0D0D0F; font-weight: 500; }
+
+/* canvas area */
+.canvas-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  gap: 12px;
+}
+#gameCanvas {
+  border-radius: 8px;
+  cursor: pointer;
+  max-width: 100%;
+  touch-action: none;
+}
+.progress-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+  align-items: center;
+}
+.progress-label { font-size: 0.72rem; color: var(--text3); min-width: 32px; }
+.progress-bar { flex: 1; height: 4px; background: var(--surface); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s; }
+
+/* action bar */
+.action-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+  flex-wrap: wrap;
+}
+.action-btn {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  padding: 10px 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 60px;
+}
+.action-btn:hover { border-color: var(--border2); background: var(--bg3); }
+.action-btn:active { transform: scale(0.96); }
+.action-btn.primary { background: var(--gold2); border-color: var(--gold2); color: #0D0D0F; font-weight: 500; }
+.action-btn.primary:hover { background: var(--gold); }
+
+/* ─── MODALS ─── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 100;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  padding: 1.5rem 1.5rem 2rem;
+  width: 100%;
+  max-width: 480px;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-handle { width: 40px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 1.5rem; }
+.modal h2 { font-family: 'Shippori Mincho', serif; font-size: 1.6rem; color: var(--gold); margin-bottom: 0.5rem; }
+.modal p { font-size: 0.85rem; color: var(--text2); line-height: 1.6; margin-bottom: 1rem; }
+.modal-btns { display: flex; flex-direction: column; gap: 8px; }
+.modal-btn {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.modal-btn:hover { background: var(--bg3); border-color: var(--border2); }
+.modal-btn.gold { background: var(--gold2); border-color: var(--gold2); color: #0D0D0F; font-weight: 500; }
+.modal-btn.gold:hover { background: var(--gold); }
+.modal-btn.ghost { background: none; border-color: transparent; color: var(--text3); font-size: 0.82rem; }
+
+/* win modal specific */
+.win-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 1rem 0; }
+.win-stat { background: var(--surface); border-radius: 10px; padding: 10px; text-align: center; }
+.win-stat-val { font-size: 1.3rem; font-weight: 500; color: var(--gold); }
+.win-stat-label { font-size: 0.65rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+/* premium modal */
+.premium-features { margin: 1rem 0; }
+.pf-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.pf-item:last-child { border-bottom: none; }
+.pf-icon { font-size: 18px; width: 24px; text-align: center; }
+.price-row { display: flex; align-items: baseline; gap: 8px; margin: 1rem 0; }
+.price-big { font-family: 'Shippori Mincho', serif; font-size: 2rem; color: var(--gold); }
+.price-period { font-size: 0.8rem; color: var(--text3); }
+
+/* friends modal */
+.share-code {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  margin: 1rem 0;
+  font-family: 'Shippori Mincho', serif;
+  font-size: 1.8rem;
+  color: var(--gold);
+  letter-spacing: 0.2em;
+}
+.friends-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+.friend-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border-radius: 10px; padding: 10px 12px; }
+.friend-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--gold2); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 500; color: #0D0D0F; }
+.friend-name { flex: 1; font-size: 0.85rem; }
+.friend-streak { font-size: 0.72rem; color: var(--gold); }
+
+/* daily reward modal */
+.reward-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 1rem 0; }
+.reward-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 8px; text-align: center; }
+.reward-item.claimed { border-color: var(--gold2); background: rgba(200,144,48,0.1); }
+.reward-item.today { border-color: var(--blue); background: rgba(96,144,224,0.1); }
+.reward-icon { font-size: 24px; margin-bottom: 4px; }
+.reward-day { font-size: 0.65rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+.reward-name { font-size: 0.72rem; margin-top: 2px; }
+
+/* variant badge */
+.variant-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.variant-classic { background: rgba(240,192,96,0.15); color: var(--gold); }
+.variant-color { background: rgba(96,144,224,0.15); color: var(--blue); }
+.variant-regional { background: rgba(144,96,208,0.15); color: var(--purple); }
+
+/* ad banner */
+.ad-banner {
+  background: var(--surface);
+  border: 1px dashed var(--border2);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--text3);
+  margin: 0 16px 8px;
+}
+.ad-banner span { color: var(--text2); font-size: 0.65rem; }
+
+/* notification dot */
+.notif { display: inline-block; width: 8px; height: 8px; background: var(--amber); border-radius: 50%; margin-left: 4px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ HOME ═══════════════════════════ -->
+<div id="home" class="screen active">
+  <div class="home-lantern">🏮</div>
+  <div class="home-title">明かり</div>
+  <div class="home-sub">Akari · Puzzle de lumière</div>
+
+  <!-- Streak -->
+  <div class="streak-bar">
+    <div class="streak-fire">🔥</div>
+    <div class="streak-info">
+      <div class="streak-count" id="home-streak">0</div>
+      <div class="streak-label">jours consécutifs</div>
+    </div>
+    <div class="streak-shield" id="shield-icon" title="Bouclier streak (premium)">🛡️</div>
+  </div>
+
+  <!-- Daily reward -->
+  <div class="daily-reward" onclick="showModal('dailyRewardModal')">
+    <div class="dr-icon">🎁</div>
+    <div>
+      <div class="dr-title">Récompense du jour <span class="notif" id="reward-notif"></span></div>
+      <div class="dr-sub" id="reward-sub">Indice gratuit + accès Akari Coloré</div>
+    </div>
+    <button class="dr-btn">Ouvrir</button>
+  </div>
+
+  <!-- Menu -->
+  <div class="menu-grid">
+    <button class="menu-btn featured" onclick="startGame('classic','daily')">
+      <div class="mb-icon">☀️</div>
+      <div class="mb-info">
+        <div class="mb-title">Défi du jour <span class="variant-tag variant-classic">Classic</span></div>
+        <div class="mb-sub">Même grille pour tous · Streak en jeu</div>
+      </div>
+    </button>
+
+    <button class="menu-btn" onclick="startGame('classic','easy')">
+      <div class="mb-icon">🌱</div>
+      <div class="mb-title">Facile</div>
+      <div class="mb-sub">6×6 · Illimité</div>
+    </button>
+
+    <button class="menu-btn" onclick="startGame('classic','medium')">
+      <div class="mb-icon">🌿</div>
+      <div class="mb-title">Moyen</div>
+      <div class="mb-sub">8×8 · Illimité</div>
+    </button>
+
+    <button class="menu-btn" onclick="startGame('classic','hard')">
+      <div class="mb-icon">🔥</div>
+      <div class="mb-title">Difficile</div>
+      <div class="mb-sub">10×10 · Illimité</div>
+    </button>
+
+    <button class="menu-btn" onclick="startVariant('color')">
+      <div class="mb-icon">🌈</div>
+      <div class="mb-title">Coloré <span class="badge-free" id="color-badge">3/jr</span></div>
+      <div class="mb-sub">Lumières de couleurs</div>
+    </button>
+
+    <button class="menu-btn" onclick="startVariant('regional')">
+      <div class="mb-icon">🗺️</div>
+      <div class="mb-title">Régional <span class="badge-free" id="regional-badge">3/jr</span></div>
+      <div class="mb-sub">1 ampoule par zone</div>
+    </button>
+  </div>
+
+  <!-- Friends & Premium -->
+  <div style="display:flex;gap:8px;width:100%;max-width:340px;margin-bottom:1rem;">
+    <button class="menu-btn" style="flex:1;align-items:center;flex-direction:row;gap:8px;" onclick="showModal('friendsModal')">
+      <span style="font-size:20px;">👥</span>
+      <div><div class="mb-title" style="font-size:0.82rem;">Amis</div><div class="mb-sub">Défi & parrainage</div></div>
+    </button>
+    <button class="menu-btn" style="flex:1;align-items:center;flex-direction:row;gap:8px;border-color:var(--gold2);" onclick="showModal('premiumModal')">
+      <span style="font-size:20px;">⭐</span>
+      <div><div class="mb-title" style="font-size:0.82rem;">Premium</div><div class="mb-sub" style="color:var(--gold2);">1€ / mois</div></div>
+    </button>
+  </div>
+
+  <div class="premium-banner">
+    Version gratuite · <a onclick="showModal('premiumModal')">Passer à Premium</a> ou <a onclick="showModal('friendsModal')">inviter 3 amis →</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ GAME ═══════════════════════════ -->
+<div id="game" class="screen">
+  <div class="game-header">
+    <button class="back-btn" onclick="goHome()">← Retour</button>
+    <div class="game-title-bar">
+      <div class="game-mode-name" id="gModeName">Akari Classique</div>
+      <div class="game-level-name" id="gLevelName">Niveau Facile · 6×6</div>
+    </div>
+    <div class="hint-counter" onclick="useHint()">
+      <span class="hint-icon">💡</span>
+      <span id="hint-count">3</span>
+    </div>
+  </div>
+
+  <div class="diff-tabs" id="diffTabs">
+    <button class="diff-tab active" onclick="switchDiff('easy')">Facile</button>
+    <button class="diff-tab" onclick="switchDiff('medium')">Moyen</button>
+    <button class="diff-tab" onclick="switchDiff('hard')">Difficile</button>
+  </div>
+
+  <div class="ad-banner" id="adBanner">
+    <span>Publicité · Passer à Premium pour supprimer les pubs</span>
+    <div style="height:32px;display:flex;align-items:center;justify-content:center;margin-top:4px;color:var(--text2);font-size:0.8rem;">[ AdSense ]</div>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="gameCanvas"></canvas>
+    <div class="progress-row">
+      <span class="progress-label" id="progLabel">0%</span>
+      <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+      <span id="progCount" style="font-size:0.72rem;color:var(--text3);">0/0</span>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="action-btn" onclick="toggleMark()">✕ Marquer</button>
+    <button class="action-btn" onclick="undoLast()">↩ Annuler</button>
+    <button class="action-btn" onclick="checkSolution()">✓ Vérifier</button>
+    <button class="action-btn primary" onclick="newPuzzle()">↻ Nouveau</button>
+  </div>
+</div>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- WIN -->
+<div class="modal-overlay" id="winModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>✨ Résolu !</h2>
+    <p id="winMsg">Tu as illuminé toute la grille !</p>
+    <div class="win-stats">
+      <div class="win-stat"><div class="win-stat-val" id="wTime">—</div><div class="win-stat-label">Temps</div></div>
+      <div class="win-stat"><div class="win-stat-val" id="wHints">—</div><div class="win-stat-label">Indices</div></div>
+      <div class="win-stat"><div class="win-stat-val" id="wStreak">—</div><div class="win-stat-label">Streak 🔥</div></div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn gold" onclick="newPuzzle();closeModal('winModal')">Puzzle suivant →</button>
+      <button class="modal-btn" onclick="goHome();closeModal('winModal')">Accueil</button>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY REWARD -->
+<div class="modal-overlay" id="dailyRewardModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>🎁 Récompense du jour</h2>
+    <p>Connecte-toi chaque jour pour des récompenses croissantes.</p>
+    <div class="reward-grid" id="rewardGrid"></div>
+    <div class="modal-btns">
+      <button class="modal-btn gold" onclick="claimReward()">Récupérer ma récompense</button>
+      <button class="modal-btn ghost" onclick="closeModal('dailyRewardModal')">Plus tard</button>
+    </div>
+  </div>
+</div>
+
+<!-- PREMIUM -->
+<div class="modal-overlay" id="premiumModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>⭐ Akari Premium</h2>
+    <div class="price-row">
+      <span class="price-big">1€</span>
+      <span class="price-period">/ mois · sans engagement</span>
+    </div>
+    <div class="premium-features">
+      <div class="pf-item"><span class="pf-icon">🌈</span> Variantes Coloré & Régional illimitées</div>
+      <div class="pf-item"><span class="pf-icon">🚫</span> Zéro publicité</div>
+      <div class="pf-item"><span class="pf-icon">💡</span> 5 indices par jour (vs 1 en gratuit)</div>
+      <div class="pf-item"><span class="pf-icon">🛡️</span> 1 bouclier streak / semaine</div>
+      <div class="pf-item"><span class="pf-icon">🏆</span> Classement mondial</div>
+      <div class="pf-item"><span class="pf-icon">👥</span> Défi amis illimité</div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn gold" onclick="activatePremium()">Commencer — 1€/mois</button>
+      <button class="modal-btn" onclick="showModal('friendsModal');closeModal('premiumModal')">🎁 Inviter 3 amis → 1 mois gratuit</button>
+      <button class="modal-btn ghost" onclick="closeModal('premiumModal')">Pas maintenant</button>
+    </div>
+  </div>
+</div>
+
+<!-- FRIENDS -->
+<div class="modal-overlay" id="friendsModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>👥 Amis & Parrainage</h2>
+    <p>Invite 3 amis → <strong style="color:var(--gold)">1 mois Premium offert</strong></p>
+    <div class="share-code" id="myCode">AK-2847</div>
+    <div class="modal-btns" style="margin-bottom:1rem;">
+      <button class="modal-btn" onclick="shareCode()">📤 Partager mon code</button>
+    </div>
+    <p style="font-size:0.8rem;margin-bottom:0.5rem;">Amis connectés :</p>
+    <div class="friends-list" id="friendsList"></div>
+    <p style="font-size:0.72rem;color:var(--text3);margin-bottom:1rem;" id="referralStatus">0/3 amis parrainés · encore 3 pour le mois gratuit</p>
+    <div class="modal-btns">
+      <button class="modal-btn ghost" onclick="closeModal('friendsModal')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ERROR -->
+<div class="modal-overlay" id="errorModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>🔴 Erreurs détectées</h2>
+    <p id="errorMsg">Des ampoules s'illuminent mutuellement ou des contraintes ne sont pas respectées.</p>
+    <div class="modal-btns">
+      <button class="modal-btn gold" onclick="useHint();closeModal('errorModal')">💡 Utiliser un indice</button>
+      <button class="modal-btn ghost" onclick="closeModal('errorModal')">Continuer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════ STATE ═══════════════
+let state = {
+  isPremium: false,
+  streak: parseInt(localStorage.getItem('streak') || '0'),
+  lastPlay: localStorage.getItem('lastPlay') || '',
+  hints: parseInt(localStorage.getItem('hints') || '3'),
+  rewardClaimed: localStorage.getItem('rewardClaimed') || '',
+  colorPlays: parseInt(localStorage.getItem('colorPlays') || '0'),
+  regionalPlays: parseInt(localStorage.getItem('regionalPlays') || '0'),
+  colorDate: localStorage.getItem('colorDate') || '',
+  regionalDate: localStorage.getItem('regionalDate') || '',
+  referrals: parseInt(localStorage.getItem('referrals') || '0'),
+  shieldActive: false,
+};
+
+const TODAY = new Date().toISOString().split('T')[0];
+
+// Reset daily counters
+if (state.colorDate !== TODAY) { state.colorPlays = 0; state.colorDate = TODAY; localStorage.setItem('colorPlays','0'); localStorage.setItem('colorDate',TODAY); }
+if (state.regionalDate !== TODAY) { state.regionalPlays = 0; state.regionalDate = TODAY; localStorage.setItem('regionalPlays','0'); localStorage.setItem('regionalDate',TODAY); }
+
+// Update streak
+function checkStreak() {
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yStr = yesterday.toISOString().split('T')[0];
+  if (state.lastPlay === yStr) { /* keep streak */ }
+  else if (state.lastPlay !== TODAY) {
+    if (state.lastPlay !== yStr && state.lastPlay !== '') { state.streak = 0; }
+  }
+}
+checkStreak();
+
+// ═══════════════ GAME ENGINE ═══════════════
+let puzzle = null, solution = null, markMode = false, history = [], startTime = null, hintsUsed = 0;
+let currentMode = 'classic', currentDiff = 'easy', isDaily = false;
+let canvas, ctx;
+
+const CONFIGS = {
+  easy:   { rows: 6, cols: 6 },
+  medium: { rows: 8, cols: 8 },
+  hard:   { rows: 10, cols: 10 },
+  daily:  { rows: 8, cols: 8 }
+};
+
+const BULB_COLORS = ['#F0C060','#6090E0','#9060D0','#40B090','#E06050'];
+
+function seedRng(seed) {
+  let s = seed;
+  return () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0xffffffff; };
+}
+
+function getDailySeed() {
+  const d = TODAY.replace(/-/g,'');
+  return parseInt(d) % 999999;
+}
+
+function generatePuzzle(rows, cols, diff, seed) {
+  const rng = seed !== undefined ? seedRng(seed) : seedRng(Math.floor(Math.random()*999999));
+  // Place black cells based on difficulty
+  const density = diff === 'easy' ? 0.18 : diff === 'medium' ? 0.22 : 0.26;
+  const blacks = [];
+  const isBlack = Array.from({length:rows},()=>Array(cols).fill(false));
+
+  for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) {
+    if (rng() < density) { isBlack[r][c] = true; blacks.push([r,c]); }
+  }
+
+  // Generate a valid solution first
+  const bulbs = Array.from({length:rows},()=>Array(cols).fill(false));
+  const lit = Array.from({length:rows},()=>Array(cols).fill(false));
+
+  function illuminate(r,c) {
+    for (let dc=1; c+dc<cols && !isBlack[r][c+dc]; dc++) lit[r][c+dc]=true;
+    for (let dc=1; c-dc>=0 && !isBlack[r][c-dc]; dc++) lit[r][c-dc]=true;
+    for (let dr=1; r+dr<rows && !isBlack[r+dr][c]; dr++) lit[r+dr][c]=true;
+    for (let dr=1; r-dr>=0 && !isBlack[r-dr][c]; dr++) lit[r-dr][c]=true;
+    lit[r][c]=true;
+  }
+
+  // Place bulbs greedily
+  const whites = [];
+  for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) if (!isBlack[r][c]) whites.push([r,c]);
+  // shuffle
+  for (let i=whites.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[whites[i],whites[j]]=[whites[j],whites[i]];}
+
+  function conflictsWithBulb(r,c) {
+    for (let dc=1;c+dc<cols&&!isBlack[r][c+dc];dc++) if(bulbs[r][c+dc]) return true;
+    for (let dc=1;c-dc>=0&&!isBlack[r][c-dc];dc++) if(bulbs[r][c-dc]) return true;
+    for (let dr=1;r+dr<rows&&!isBlack[r+dr][c];dr++) if(bulbs[r+dr][c]) return true;
+    for (let dr=1;r-dr>=0&&!isBlack[r-dr][c];dr++) if(bulbs[r-dr][c]) return true;
+    return false;
+  }
+
+  for (const [r,c] of whites) {
+    if (!lit[r][c] && !conflictsWithBulb(r,c)) { bulbs[r][c]=true; illuminate(r,c); }
+  }
+
+  // Count adjacents for numbered black cells
+  const nums = Array.from({length:rows},()=>Array(cols).fill(-1));
+  for (const [r,c] of blacks) {
+    let n=0;
+    if(r>0&&bulbs[r-1][c]) n++;
+    if(r<rows-1&&bulbs[r+1][c]) n++;
+    if(c>0&&bulbs[r][c-1]) n++;
+    if(c<cols-1&&bulbs[r][c+1]) n++;
+    // Only show number on ~60% of black cells based on difficulty
+    const showNum = diff === 'easy' ? rng()<0.7 : diff === 'medium' ? rng()<0.55 : rng()<0.4;
+    if (showNum) nums[r][c] = n;
+  }
+
+  return { rows, cols, isBlack, nums, solution: bulbs };
+}
+
+function generateRegionalPuzzle(rows, cols) {
+  const rng = seedRng(Math.floor(Math.random()*999999));
+  const base = generatePuzzle(rows, cols, 'medium', Math.floor(rng()*999999));
+  // Assign regions (simple rectangular regions)
+  const regions = Array.from({length:rows},()=>Array(cols).fill(-1));
+  let regionId = 0;
+  const regionSize = Math.floor(rows*cols / (rows+cols));
+  for (let r=0; r<rows; r+=2) for (let c=0; c<cols; c+=2) {
+    for (let dr=0; dr<2 && r+dr<rows; dr++) for (let dc=0; dc<2 && c+dc<cols; dc++) {
+      if (!base.isBlack[r+dr][c+dc]) regions[r+dr][c+dc] = regionId;
+    }
+    regionId++;
+  }
+  return { ...base, regions, mode: 'regional' };
+}
+
+function generateColorPuzzle(rows, cols) {
+  const rng = seedRng(Math.floor(Math.random()*999999));
+  const base = generatePuzzle(rows, cols, 'medium', Math.floor(rng()*999999));
+  // Assign colors to bulbs
+  const colors = Array.from({length:rows},()=>Array(cols).fill(0));
+  let colorIdx = 1;
+  for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) {
+    if (base.solution[r][c]) { colors[r][c] = colorIdx; colorIdx = (colorIdx % 4) + 1; }
+  }
+  return { ...base, bulbColors: colors, mode: 'color' };
+}
+
+// ═══════════════ RENDER ═══════════════
+function CELL_SIZE(rows, cols) {
+  const maxW = Math.min(window.innerWidth - 40, 420);
+  const maxH = window.innerHeight - 280;
+  return Math.floor(Math.min(maxW/cols, maxH/rows, 52));
+}
+
+function drawGrid() {
+  if (!puzzle || !canvas) return;
+  const {rows, cols, isBlack, nums, mode, regions, bulbColors} = puzzle;
+  const cs = CELL_SIZE(rows, cols);
+  const PAD = 2;
+  canvas.width = cols*cs + PAD*2;
+  canvas.height = rows*cs + PAD*2;
+
+  // compute lit cells
+  const litMap = Array.from({length:rows},()=>Array(cols).fill(false));
+  const litColor = Array.from({length:rows},()=>Array(cols).fill(0));
+  for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) {
+    if (solution[r][c] === 1) {
+      const col = (bulbColors && bulbColors[r][c]) || 1;
+      const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+      litMap[r][c]=true; litColor[r][c]=col;
+      for (const [dr,dc] of dirs) {
+        let nr=r+dr, nc=c+dc;
+        while(nr>=0&&nr<rows&&nc>=0&&nc<cols&&!isBlack[nr][nc]) {
+          litMap[nr][nc]=true;
+          if(!litColor[nr][nc]) litColor[nr][nc]=col;
+          nr+=dr; nc+=dc;
+        }
+      }
+    }
+  }
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) {
+    const x=PAD+c*cs, y=PAD+r*cs;
+    if (isBlack[r][c]) {
+      ctx.fillStyle = '#18181F';
+      ctx.fillRect(x,y,cs,cs);
+      // border
+      ctx.strokeStyle='#0D0D0F'; ctx.lineWidth=1;
+      ctx.strokeRect(x+0.5,y+0.5,cs-1,cs-1);
+      // number
+      if (nums[r][c] >= 0) {
+        ctx.fillStyle = '#E8E6E0';
+        ctx.font = `bold ${Math.round(cs*0.38)}px DM Sans, sans-serif`;
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(nums[r][c], x+cs/2, y+cs/2);
+      }
+    } else {
+      // white cell bg
+      if (litMap[r][c]) {
+        const col = litColor[r][c];
+        const colors = ['','rgba(255,210,80,0.15)','rgba(96,144,224,0.15)','rgba(144,96,208,0.15)','rgba(64,176,144,0.15)','rgba(224,96,80,0.15)'];
+        ctx.fillStyle = colors[col] || 'rgba(255,210,80,0.15)';
+      } else {
+        ctx.fillStyle = '#1C1C21';
+      }
+      ctx.fillRect(x,y,cs,cs);
+
+      // region border
+      if (mode === 'regional' && regions) {
+        ctx.strokeStyle='rgba(96,144,224,0.3)'; ctx.lineWidth=0.5;
+        ctx.strokeRect(x+0.5,y+0.5,cs-1,cs-1);
+      } else {
+        ctx.strokeStyle='rgba(60,60,80,0.6)'; ctx.lineWidth=0.5;
+        ctx.strokeRect(x+0.5,y+0.5,cs-1,cs-1);
+      }
+
+      // bulb
+      if (solution[r][c] === 1) {
+        const col = (bulbColors && bulbColors[r][c]) || 1;
+        const bulbColors2 = ['','#F0C060','#6090E0','#9060D0','#40B090','#E06050'];
+        const bc = bulbColors2[col] || '#F0C060';
+        // glow
+        const grad = ctx.createRadialGradient(x+cs/2,y+cs/2,0,x+cs/2,y+cs/2,cs*0.45);
+        grad.addColorStop(0, bc+'FF');
+        grad.addColorStop(0.5, bc+'AA');
+        grad.addColorStop(1, bc+'00');
+        ctx.fillStyle=grad;
+        ctx.beginPath(); ctx.arc(x+cs/2,y+cs/2,cs*0.45,0,Math.PI*2); ctx.fill();
+        // bulb icon
+        ctx.fillStyle=bc;
+        ctx.beginPath(); ctx.arc(x+cs/2,y+cs*0.44,cs*0.22,0,Math.PI*2); ctx.fill();
+        ctx.fillRect(x+cs*0.38,y+cs*0.56,cs*0.24,cs*0.1);
+        ctx.fillRect(x+cs*0.4,y+cs*0.64,cs*0.2,cs*0.06);
+      } else if (solution[r][c] === 2) {
+        // mark X
+        ctx.strokeStyle='rgba(224,80,80,0.7)'; ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.moveTo(x+cs*0.3,y+cs*0.3); ctx.lineTo(x+cs*0.7,y+cs*0.7); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x+cs*0.7,y+cs*0.3); ctx.lineTo(x+cs*0.3,y+cs*0.7); ctx.stroke();
+      }
+    }
+  }
+
+  // errors highlight
+  const errs = findErrors();
+  for (const [r,c] of errs) {
+    const x=PAD+c*cs, y=PAD+r*cs;
+    ctx.fillStyle='rgba(224,80,80,0.2)';
+    ctx.fillRect(x,y,cs,cs);
+  }
+
+  // progress
+  updateProgress(litMap, rows, cols);
+}
+
+function updateProgress(litMap, rows, cols) {
+  const {isBlack} = puzzle;
+  let total=0, lit=0;
+  for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) {
+    if(!isBlack[r][c]){total++; if(litMap[r][c]) lit++;}
+  }
+  const pct = total>0 ? Math.round(lit/total*100) : 0;
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLabel').textContent=pct+'%';
+  document.getElementById('progCount').textContent=lit+'/'+total;
+}
+
+function findErrors() {
+  if (!puzzle || !solution) return [];
+  const {rows,cols,isBlack,nums,mode,bulbColors} = puzzle;
+  const errors = [];
+  // bulbs shining on each other
+  for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) {
+    if (solution[r][c]!==1) continue;
+    const col1 = (bulbColors&&bulbColors[r][c])||1;
+    const dirs=[[0,1],[0,-1],[1,0],[-1,0]];
+    for (const [dr,dc] of dirs) {
+      let nr=r+dr,nc=c+dc;
+      while(nr>=0&&nr<rows&&nc>=0&&nc<cols&&!isBlack[nr][nc]) {
+        if (solution[nr][nc]===1) {
+          const col2=(bulbColors&&bulbColors[nr][nc])||1;
+          if (mode!=='color'||col1===col2) { errors.push([r,c],[nr,nc]); }
+        }
+        nr+=dr; nc+=dc;
+      }
+    }
+  }
+  // numbered black cells
+  for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) {
+    if (!isBlack[r][c]||nums[r][c]<0) continue;
+    let adj=0;
+    if(r>0&&solution[r-1][c]===1) adj++;
+    if(r<rows-1&&solution[r+1][c]===1) adj++;
+    if(c>0&&solution[r][c-1]===1) adj++;
+    if(c<cols-1&&solution[r][c+1]===1) adj++;
+    if (adj!==nums[r][c]) errors.push([r,c]);
+  }
+  return errors;
+}
+
+function isWon() {
+  const {rows,cols,isBlack,nums,solution:sol,mode,regions} = puzzle;
+  // All white cells lit
+  const litMap = Array.from({length:rows},()=>Array(cols).fill(false));
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) {
+    if(solution[r][c]===1){
+      litMap[r][c]=true;
+      const dirs=[[0,1],[0,-1],[1,0],[-1,0]];
+      for(const[dr,dc]of dirs){let nr=r+dr,nc=c+dc;while(nr>=0&&nr<rows&&nc>=0&&nc<cols&&!isBlack[nr][nc]){litMap[nr][nc]=true;nr+=dr;nc+=dc;}}
+    }
+  }
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) if(!isBlack[r][c]&&!litMap[r][c]) return false;
+  // No errors
+  return findErrors().length===0;
+}
+
+// ═══════════════ INTERACTION ═══════════════
+function onCanvasClick(e) {
+  if (!puzzle) return;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX - 2;
+  const my = (e.clientY - rect.top) * scaleY - 2;
+  const cs = CELL_SIZE(puzzle.rows, puzzle.cols);
+  const c = Math.floor(mx/cs), r = Math.floor(my/cs);
+  if (r<0||r>=puzzle.rows||c<0||c>=puzzle.cols) return;
+  if (puzzle.isBlack[r][c]) return;
+
+  history.push(solution[r][c]);
+  if (markMode) {
+    solution[r][c] = solution[r][c]===2 ? 0 : 2;
+  } else {
+    solution[r][c] = solution[r][c]===1 ? 0 : 1;
+  }
+  drawGrid();
+  if (isWon()) onWin();
+}
+
+function onCanvasTouch(e) {
+  e.preventDefault();
+  onCanvasClick(e.touches[0]);
+}
+
+function toggleMark() { markMode = !markMode; document.querySelector('.action-bar .action-btn').style.background = markMode ? 'rgba(224,80,80,0.2)' : ''; }
+function undoLast() {
+  if (!history.length) return;
+  // find last non-zero placement... simplified: just reset last click
+  // We track full grid snapshots
+  if (historyGrid.length) { solution = historyGrid.pop(); drawGrid(); }
+}
+
+let historyGrid = [];
+function recordHistory() { historyGrid.push(solution.map(r=>[...r])); }
+
+// Wrap click with history
+const _onCanvasClick = onCanvasClick;
+canvas = document.getElementById('gameCanvas');
+ctx = canvas.getContext('2d');
+canvas.addEventListener('click', e => { recordHistory(); _onCanvasClick(e); });
+canvas.addEventListener('touchstart', e => { recordHistory(); e.preventDefault(); _onCanvasClick(e.touches[0]); }, {passive:false});
+
+// ═══════════════ GAME ACTIONS ═══════════════
+function startGame(mode, diff) {
+  currentMode = mode; currentDiff = diff;
+  isDaily = (diff === 'daily');
+  markMode = false; historyGrid = []; hintsUsed = 0;
+  startTime = Date.now();
+
+  const cfg = CONFIGS[diff] || CONFIGS.easy;
+  const seed = isDaily ? getDailySeed() : undefined;
+
+  if (mode === 'color') puzzle = generateColorPuzzle(cfg.rows, cfg.cols);
+  else if (mode === 'regional') puzzle = generateRegionalPuzzle(cfg.rows, cfg.cols);
+  else puzzle = generatePuzzle(cfg.rows, cfg.cols, diff === 'daily' ? 'medium' : diff, seed);
+
+  solution = Array.from({length:puzzle.rows},()=>Array(puzzle.cols).fill(0));
+
+  const modeNames = {classic:'Akari Classique', color:'Akari Coloré 🌈', regional:'Akari Régional 🗺️'};
+  const diffNames = {easy:'Facile · 6×6', medium:'Moyen · 8×8', hard:'Difficile · 10×10', daily:'Défi du jour · 8×8'};
+  document.getElementById('gModeName').textContent = modeNames[mode]||'Akari';
+  document.getElementById('gLevelName').textContent = diffNames[diff]||diff;
+  document.getElementById('hint-count').textContent = state.hints;
+
+  const hasDiffTabs = (mode==='classic'&&!isDaily);
+  document.getElementById('diffTabs').style.display = hasDiffTabs?'flex':'none';
+  document.getElementById('adBanner').style.display = state.isPremium?'none':'block';
+
+  if (hasDiffTabs) {
+    document.querySelectorAll('.diff-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.diff-tab').forEach(t=>{ if(t.textContent.toLowerCase().startsWith(diff)) t.classList.add('active'); });
+  }
+
+  showScreen('game');
+  setTimeout(()=>drawGrid(),50);
+}
+
+function startVariant(mode) {
+  const key = mode+'Plays';
+  const today = mode+'Date';
+  if (!state.isPremium && state[key]>=3) {
+    showModal('premiumModal'); return;
+  }
+  state[key]++;
+  localStorage.setItem(key, state[key]);
+  startGame(mode, 'medium');
+}
+
+function switchDiff(diff) {
+  currentDiff = diff;
+  document.querySelectorAll('.diff-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  startGame(currentMode, diff);
+}
+
+function newPuzzle() { startGame(currentMode, currentDiff); }
+
+function useHint() {
+  if (state.hints <= 0) { showModal('premiumModal'); return; }
+  if (!puzzle) return;
+  // Find an unlit white cell that should have a bulb
+  const {rows,cols,isBlack,solution:sol} = puzzle;
+  for (let r=0;r<rows;r++) for (let c=0;c<cols;c++) {
+    if (!isBlack[r][c] && puzzle.solution[r][c] && solution[r][c]!==1) {
+      solution[r][c]=1; hintsUsed++;
+      state.hints--; localStorage.setItem('hints',state.hints);
+      document.getElementById('hint-count').textContent=state.hints;
+      drawGrid();
+      if(isWon()) onWin();
+      return;
+    }
+  }
+}
+
+function checkSolution() {
+  const errs = findErrors();
+  if (errs.length > 0) { showModal('errorModal'); drawGrid(); return; }
+  if (isWon()) { onWin(); return; }
+  // check if filled
+  const {rows,cols,isBlack} = puzzle;
+  const litMap = Array.from({length:rows},()=>Array(cols).fill(false));
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) if(solution[r][c]===1){litMap[r][c]=true;const dirs=[[0,1],[0,-1],[1,0],[-1,0]];for(const[dr,dc]of dirs){let nr=r+dr,nc=c+dc;while(nr>=0&&nr<rows&&nc>=0&&nc<cols&&!isBlack[nr][nc]){litMap[nr][nc]=true;nr+=dr;nc+=dc;}}}
+  let unlit=0;
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) if(!isBlack[r][c]&&!litMap[r][c]) unlit++;
+  document.getElementById('errorMsg').textContent = unlit>0 ? `${unlit} case(s) non éclairée(s). Continue !` : 'Des ampoules se heurtent. Vérifie les conflits.';
+  showModal('errorModal');
+}
+
+function onWin() {
+  const elapsed = Math.round((Date.now()-startTime)/1000);
+  const mins = Math.floor(elapsed/60), secs = elapsed%60;
+  // update streak
+  if (isDaily && state.lastPlay !== TODAY) {
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+    const yStr = yesterday.toISOString().split('T')[0];
+    if (state.lastPlay===yStr||state.streak===0) state.streak++;
+    else state.streak=1;
+    state.lastPlay=TODAY;
+    localStorage.setItem('streak',state.streak);
+    localStorage.setItem('lastPlay',TODAY);
+    document.getElementById('home-streak').textContent=state.streak;
+  }
+  document.getElementById('wTime').textContent=mins>0?`${mins}m${secs}s`:`${secs}s`;
+  document.getElementById('wHints').textContent=hintsUsed>0?`-${hintsUsed}`:'★';
+  document.getElementById('wStreak').textContent=state.streak+'🔥';
+  document.getElementById('winMsg').textContent=isDaily?`Défi quotidien résolu ! Streak : ${state.streak} jours.`:'Tu as illuminé toute la grille !';
+  showModal('winModal');
+}
+
+function goHome() { showScreen('home'); updateHomeUI(); }
+
+// ═══════════════ HOME UI ═══════════════
+function updateHomeUI() {
+  document.getElementById('home-streak').textContent = state.streak;
+  document.getElementById('shield-icon').classList.toggle('active', state.shieldActive);
+
+  // variant badges
+  const colorLeft = Math.max(0, 3-state.colorPlays);
+  const regLeft = Math.max(0, 3-state.regionalPlays);
+  document.getElementById('color-badge').textContent = state.isPremium ? '∞' : colorLeft+'/jr';
+  document.getElementById('regional-badge').textContent = state.isPremium ? '∞' : regLeft+'/jr';
+
+  // reward notif
+  document.getElementById('reward-notif').style.display = state.rewardClaimed!==TODAY ? '' : 'none';
+}
+
+// ═══════════════ DAILY REWARD ═══════════════
+const REWARDS = [
+  {icon:'💡', name:'1 Indice', day:'Lun'},
+  {icon:'🌈', name:'Coloré', day:'Mar'},
+  {icon:'💡', name:'2 Indices', day:'Mer'},
+  {icon:'🗺️', name:'Régional', day:'Jeu'},
+  {icon:'💡', name:'1 Indice', day:'Ven'},
+  {icon:'⭐', name:'1j Premium', day:'Sam'},
+  {icon:'🎁', name:'Surprise', day:'Dim'},
+];
+
+function buildRewardGrid() {
+  const today = new Date().getDay(); // 0=Sun
+  const grid = document.getElementById('rewardGrid');
+  grid.innerHTML = REWARDS.map((r,i)=>{
+    const dayIdx = (i+1)%7; // Mon=1..Sun=0
+    const isToday = dayIdx === today || (i===6&&today===0);
+    const claimed = state.rewardClaimed===TODAY;
+    return `<div class="reward-item ${claimed&&isToday?'claimed':''} ${!claimed&&isToday?'today':''}">
+      <div class="reward-icon">${r.icon}</div>
+      <div class="reward-day">${r.day}</div>
+      <div class="reward-name">${r.name}</div>
+    </div>`;
+  }).join('');
+}
+
+function claimReward() {
+  if (state.rewardClaimed===TODAY) { closeModal('dailyRewardModal'); return; }
+  state.rewardClaimed=TODAY; localStorage.setItem('rewardClaimed',TODAY);
+  state.hints+=1; localStorage.setItem('hints',state.hints);
+  closeModal('dailyRewardModal');
+  updateHomeUI();
+}
+
+// ═══════════════ PREMIUM ═══════════════
+function activatePremium() {
+  state.isPremium=true;
+  state.shieldActive=true;
+  state.hints=5;
+  closeModal('premiumModal');
+  updateHomeUI();
+  // Show confirmation
+  setTimeout(()=>alert('✨ Premium activé ! Merci pour votre soutien.'),300);
+}
+
+// ═══════════════ FRIENDS ═══════════════
+const DEMO_FRIENDS = [
+  {name:'Alex', streak:12, avatar:'AX'},
+  {name:'Maya', streak:5, avatar:'MY'},
+];
+
+function buildFriendsList() {
+  const list = document.getElementById('friendsList');
+  list.innerHTML = DEMO_FRIENDS.map(f=>`
+    <div class="friend-item">
+      <div class="friend-avatar">${f.avatar}</div>
+      <span class="friend-name">${f.name}</span>
+      <span class="friend-streak">🔥 ${f.streak} jours</span>
+    </div>`).join('');
+  const ref = state.referrals;
+  document.getElementById('referralStatus').textContent = `${ref}/3 amis parrainés · ${ref>=3?'1 mois Premium débloqué ! 🎉':'encore '+(3-ref)+' pour le mois gratuit'}`;
+}
+
+function shareCode() {
+  const code = document.getElementById('myCode').textContent;
+  if (navigator.share) {
+    navigator.share({title:'Akari — Puzzle de lumière', text:`Rejoins-moi sur Akari ! Code: ${code}`, url:'https://akari.app'});
+  } else {
+    navigator.clipboard.writeText(`Rejoins-moi sur Akari ! Code: ${code}`).then(()=>alert('Code copié !'));
+  }
+}
+
+// ═══════════════ SCREENS & MODALS ═══════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showModal(id) {
+  if (id==='dailyRewardModal') buildRewardGrid();
+  if (id==='friendsModal') buildFriendsList();
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click', e=>{ if(e.target===o) o.classList.remove('show'); });
+});
+
+// ═══════════════ INIT ═══════════════
+updateHomeUI();
+</script>
+</body>
+</html>
