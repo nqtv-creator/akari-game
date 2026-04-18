@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Akari Deep Tech</title>
+<style>
+body { font-family: Arial; background:#0f172a; color:white; text-align:center; }
+h1 { margin:10px; }
+button { padding:8px 12px; margin:5px; border:none; border-radius:8px; cursor:pointer; }
+.primary { background:#22c55e; }
+#grid { display:inline-grid; gap:4px; margin-top:10px; }
+.cell { width:50px; height:50px; display:flex; align-items:center; justify-content:center; border-radius:6px; }
+.white { background:#e2e8f0; }
+.black { background:#020617; color:white; }
+.bulb::after { content:"💡"; }
+</style>
+</head>
+<body>
+
+<h1>💡 Akari Deep Generator</h1>
+<button class="primary" onclick="generateValidPuzzle()">Generate PRO Puzzle</button>
+<div id="grid"></div>
+<div id="status"></div>
+
+<script>
+let size = 6;
+let puzzle, solution, state;
+
+function emptyGrid(){
+  return Array.from({length:size},()=>Array(size).fill('.'));
+}
+
+function canPlaceBulb(grid,r,c){
+  const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+  for(let [dr,dc] of dirs){
+    let nr=r+dr,nc=c+dc;
+    while(nr>=0&&nr<size&&nc>=0&&nc<size){
+      if(grid[nr][nc]==='#') break;
+      if(grid[nr][nc]==='B') return false;
+      nr+=dr; nc+=dc;
+    }
+  }
+  return true;
+}
+
+function generateSolution(){
+  let grid=emptyGrid();
+  for(let r=0;r<size;r++){
+    for(let c=0;c<size;c++){
+      if(Math.random()<0.4 && canPlaceBulb(grid,r,c)){
+        grid[r][c]='B';
+      }
+    }
+  }
+  return grid;
+}
+
+function addWalls(grid){
+  let g=grid.map(r=>r.slice());
+  for(let r=0;r<size;r++){
+    for(let c=0;c<size;c++){
+      if(Math.random()<0.25 && g[r][c]!== 'B') g[r][c]='#';
+    }
+  }
+  return g;
+}
+
+function addNumbers(grid, solution){
+  for(let r=0;r<size;r++){
+    for(let c=0;c<size;c++){
+      if(grid[r][c]==='#'){
+        let count=0;
+        const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+        for(let [dr,dc] of dirs){
+          let nr=r+dr,nc=c+dc;
+          if(nr>=0&&nr<size&&nc>=0&&nc<size){
+            if(solution[nr][nc]==='B') count++;
+          }
+        }
+        if(count>0) grid[r][c]=count.toString();
+      }
+    }
+  }
+  return grid;
+}
+
+function solve(grid){
+  let solutions=0;
+
+  function backtrack(g){
+    if(solutions>1) return;
+
+    let found=false;
+    for(let r=0;r<size;r++){
+      for(let c=0;c<size;c++){
+        if(g[r][c]==='.'){
+          found=true;
+
+          // try bulb
+          if(canPlaceBulb(g,r,c)){
+            g[r][c]='B';
+            backtrack(g);
+            g[r][c]='.';
+          }
+
+          // try empty
+          g[r][c]='-';
+          backtrack(g);
+          g[r][c]='.';
+
+          return;
+        }
+      }
+    }
+
+    if(!found) solutions++;
+  }
+
+  let copy=grid.map(r=>r.slice());
+  backtrack(copy);
+  return solutions;
+}
+
+function generateValidPuzzle(){
+  let attempts=0;
+
+  while(true){
+    attempts++;
+
+    solution = generateSolution();
+    let grid = addWalls(solution);
+    grid = addNumbers(grid, solution);
+
+    let puzzleGrid = grid.map((row,r)=>row.map((cell,c)=>{
+      if(solution[r][c]==='B') return '.';
+      return cell;
+    }));
+
+    let solCount = solve(puzzleGrid);
+
+    if(solCount===1){
+      puzzle = puzzleGrid;
+      state = Array.from({length:size},()=>Array(size).fill(0));
+      render();
+      document.getElementById('status').textContent = `✅ Puzzle unique généré en ${attempts} essais`;
+      return;
+    }
+
+    if(attempts>50){
+      document.getElementById('status').textContent = '⚠️ fallback puzzle';
+      puzzle = puzzleGrid;
+      render();
+      return;
+    }
+  }
+}
+
+function render(){
+  const gridEl=document.getElementById('grid');
+  gridEl.innerHTML='';
+  gridEl.style.gridTemplateColumns=`repeat(${size},50px)`;
+
+  for(let r=0;r<size;r++){
+    for(let c=0;c<size;c++){
+      const div=document.createElement('div');
+      div.classList.add('cell');
+
+      if(puzzle[r][c]==='#') div.classList.add('black');
+      else if(!isNaN(puzzle[r][c])){div.classList.add('black'); div.textContent=puzzle[r][c];}
+      else{
+        div.classList.add('white');
+        if(state && state[r][c]) div.classList.add('bulb');
+        div.onclick=()=>toggle(r,c);
+      }
+
+      gridEl.appendChild(div);
+    }
+  }
+}
+
+function toggle(r,c){
+  state[r][c]=state[r][c]?0:1;
+  render();
+}
+
+</script>
+
+</body>
+</html>
